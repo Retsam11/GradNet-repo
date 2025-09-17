@@ -16,13 +16,13 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-300 to-red-250 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <GraduationCap className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AlmaConnect</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GradNet</h1>
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" asChild>
@@ -113,7 +113,7 @@ export default async function HomePage() {
             Join thousands of alumni and students building meaningful professional relationships.
           </p>
           <Button size="lg" asChild>
-            <Link href="/auth/sign-up">Join AlmaConnect Today</Link>
+            <Link href="/auth/sign-up">Join GradNet Today</Link>
           </Button>
         </div>
       </main>
@@ -121,7 +121,7 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="border-t bg-white dark:bg-gray-900 mt-16">
         <div className="container mx-auto px-4 py-8 text-center text-gray-600 dark:text-gray-400">
-          <p>&copy; 2024 AlmaConnect. Connecting alumni and students worldwide.</p>
+          <p>&copy; 2024 GradNet. Connecting alumni and students worldwide.</p>
         </div>
       </footer>
     </div>

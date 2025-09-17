@@ -43,19 +43,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-300 to-red-250 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-4">
             <GraduationCap className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AlmaConnect</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GradNet</h1>
           </div>
 
           <Card className="shadow-lg">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome Back</CardTitle>
-              <CardDescription>Sign in to your AlmaConnect account</CardDescription>
+              <CardDescription>Sign in to your GradNet account</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin}>

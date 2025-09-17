@@ -48,7 +48,7 @@ export default async function DashboardPage() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <GraduationCap className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AlmaConnect</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GradNet</h1>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600 dark:text-gray-400">

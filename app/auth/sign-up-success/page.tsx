@@ -11,7 +11,7 @@ export default function SignUpSuccessPage() {
           {/* Logo */}
           <div className="flex items-center justify-center gap-2 mb-4">
             <GraduationCap className="h-8 w-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AlmaConnect</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GradNet</h1>
           </div>
 
           <Card className="shadow-lg">
@@ -26,7 +26,7 @@ export default function SignUpSuccessPage() {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                You&apos;ve successfully signed up for AlmaConnect! Please check your email and click the confirmation
+                You&apos;ve successfully signed up for GradNet! Please check your email and click the confirmation
                 link to activate your account.
               </p>
               <div className="space-y-3">
