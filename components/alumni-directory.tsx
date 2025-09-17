@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { GraduationCap, MapPin, Building, Search, MessageSquare, Users, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -25,6 +25,7 @@ interface Profile {
   linkedin_url: string | null
   is_mentor: boolean
   is_admin: boolean
+  profile_picture: string | null
   created_at: string
   updated_at: string
 }
@@ -120,6 +121,7 @@ export function AlumniDirectory({ profiles, currentUserId }: AlumniDirectoryProp
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center mb-4">
                 <Avatar className="h-24 w-24">
+                  <AvatarImage src={selectedProfile.profile_picture || "/placeholder.svg"} alt="Profile picture" />
                   <AvatarFallback className="text-2xl bg-blue-100 text-blue-600">
                     {getInitials(selectedProfile.full_name)}
                   </AvatarFallback>
@@ -293,6 +295,7 @@ export function AlumniDirectory({ profiles, currentUserId }: AlumniDirectoryProp
             <CardHeader className="text-center pb-4">
               <div className="flex justify-center mb-3">
                 <Avatar className="h-16 w-16">
+                  <AvatarImage src={profile.profile_picture || "/placeholder.svg"} alt="Profile picture" />
                   <AvatarFallback className="text-lg bg-blue-100 text-blue-600">
                     {getInitials(profile.full_name)}
                   </AvatarFallback>

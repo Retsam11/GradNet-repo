@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { GraduationCap, ArrowLeft, Save } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { GraduationCap, ArrowLeft, Save, Upload } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
@@ -29,6 +30,7 @@ interface Profile {
   linkedin_url: string | null
   is_mentor: boolean
   is_admin: boolean
+  profile_picture: string | null
 }
 
 interface ProfileFormProps {
@@ -50,11 +52,48 @@ export function ProfileForm({ profile, userId }: ProfileFormProps) {
     is_mentor: profile?.is_mentor || false,
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [profilePicture, setProfilePicture] = useState(profile?.profile_picture || "")
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
   const router = useRouter()
 
   const currentYear = new Date().getFullYear()
   const years = Array.from({ length: 50 }, (_, i) => currentYear - i + 10)
+
+  const handleProfilePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+    setMessage(null)
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const response = await fetch("/api/upload-profile-picture", {
+        method: "POST",
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Upload failed")
+      }
+
+      const result = await response.json()
+      setProfilePicture(result.url)
+      setMessage({ type: "success", text: "Profile picture updated successfully!" })
+    } catch (error) {
+      console.error("Error uploading profile picture:", error)
+      setMessage({
+        type: "error",
+        text: error instanceof Error ? error.message : "Failed to upload profile picture",
+      })
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,6 +106,7 @@ export function ProfileForm({ profile, userId }: ProfileFormProps) {
         ...formData,
         graduation_year: formData.graduation_year ? Number.parseInt(formData.graduation_year) : null,
         updated_at: new Date().toISOString(),
+        profile_picture: profilePicture,
       }
 
       const { error } = await supabase.from("profiles").upsert({
@@ -119,6 +159,41 @@ export function ProfileForm({ profile, userId }: ProfileFormProps) {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Profile Picture */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Profile Picture</h3>
+                <div className="flex flex-col items-center gap-4">
+                  <Avatar className="w-32 h-32">
+                    <AvatarImage src={profilePicture || "/placeholder.svg"} alt="Profile picture" />
+                    <AvatarFallback className="text-2xl">
+                      {formData.full_name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col items-center gap-2">
+                    <Label htmlFor="profile-picture" className="cursor-pointer">
+                      <Button type="button" variant="outline" disabled={isUploading} asChild>
+                        <span>
+                          <Upload className="h-4 w-4 mr-2" />
+                          {isUploading ? "Uploading..." : "Upload Picture"}
+                        </span>
+                      </Button>
+                    </Label>
+                    <Input
+                      id="profile-picture"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfilePictureUpload}
+                      className="hidden"
+                    />
+                    <p className="text-sm text-gray-500">Max file size: 5MB</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Basic Information */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h3>

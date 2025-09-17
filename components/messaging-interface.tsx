@@ -21,8 +21,8 @@ interface Message {
   content: string
   is_read: boolean
   created_at: string
-  sender: { id: string; full_name: string }
-  recipient: { id: string; full_name: string }
+  sender?: { id: string; full_name: string }
+  recipient?: { id: string; full_name: string }
 }
 
 interface Profile {
@@ -84,7 +84,18 @@ export function MessagingInterface({
       .map(([otherUserId, msgs]) => {
         const sortedMsgs = msgs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         const latestMessage = sortedMsgs[0]
-        const otherUser = latestMessage.sender_id === currentUserId ? latestMessage.recipient : latestMessage.sender
+        const otherUser =
+          latestMessage.sender_id === currentUserId
+            ? latestMessage.recipient ||
+              profiles.find((p) => p.id === latestMessage.recipient_id) || {
+                id: latestMessage.recipient_id,
+                full_name: "Unknown User",
+              }
+            : latestMessage.sender ||
+              profiles.find((p) => p.id === latestMessage.sender_id) || {
+                id: latestMessage.sender_id,
+                full_name: "Unknown User",
+              }
         const unreadCount = msgs.filter((m) => m.recipient_id === currentUserId && !m.is_read).length
 
         return {
@@ -96,14 +107,14 @@ export function MessagingInterface({
         }
       })
       .sort((a, b) => new Date(b.latestMessage.created_at).getTime() - new Date(a.latestMessage.created_at).getTime())
-  }, [messages, currentUserId])
+  }, [messages, currentUserId, profiles])
 
   // Filter conversations based on search
   const filteredConversations = useMemo(() => {
     if (!searchTerm) return conversations
     return conversations.filter(
       (conv) =>
-        conv.otherUser.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (conv.otherUser?.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
         conv.latestMessage.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
         conv.latestMessage.content.toLowerCase().includes(searchTerm.toLowerCase()),
     )
@@ -230,11 +241,13 @@ export function MessagingInterface({
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-gray-100 text-gray-600 text-sm">
-                          {getInitials(isFromCurrentUser ? "You" : message.sender.full_name)}
+                          {getInitials(isFromCurrentUser ? "You" : message.sender?.full_name || "Unknown User")}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium text-sm">{isFromCurrentUser ? "You" : message.sender.full_name}</p>
+                        <p className="font-medium text-sm">
+                          {isFromCurrentUser ? "You" : message.sender?.full_name || "Unknown User"}
+                        </p>
                         <p className="text-xs text-gray-500">{formatDate(message.created_at)}</p>
                       </div>
                     </div>
@@ -446,7 +459,7 @@ export function MessagingInterface({
                     .filter(
                       (message) =>
                         searchTerm === "" ||
-                        message.sender.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        (message.sender?.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                         message.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         message.content.toLowerCase().includes(searchTerm.toLowerCase()),
                     )
@@ -467,7 +480,8 @@ export function MessagingInterface({
                         <div className="flex items-start gap-3">
                           <Avatar className="h-10 w-10 flex-shrink-0">
                             <AvatarFallback className="bg-blue-100 text-blue-600">
-                              {getInitials(message.sender.full_name)}
+                              // Added fallback for missing sender name
+                              {getInitials(message.sender?.full_name || "Unknown User")}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
@@ -475,7 +489,8 @@ export function MessagingInterface({
                               <p
                                 className={`font-medium truncate ${!message.is_read ? "text-blue-600" : "text-gray-900 dark:text-white"}`}
                               >
-                                {message.sender.full_name}
+                                // Added fallback for missing sender name
+                                {message.sender?.full_name || "Unknown User"}
                               </p>
                               <div className="flex items-center gap-2">
                                 {!message.is_read && <div className="w-2 h-2 bg-blue-600 rounded-full" />}
@@ -498,7 +513,7 @@ export function MessagingInterface({
                     .filter(
                       (message) =>
                         searchTerm === "" ||
-                        message.recipient.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        (message.recipient?.full_name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                         message.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         message.content.toLowerCase().includes(searchTerm.toLowerCase()),
                     )
@@ -514,13 +529,15 @@ export function MessagingInterface({
                         <div className="flex items-start gap-3">
                           <Avatar className="h-10 w-10 flex-shrink-0">
                             <AvatarFallback className="bg-green-100 text-green-600">
-                              {getInitials(message.recipient.full_name)}
+                              // Added fallback for missing recipient name
+                              {getInitials(message.recipient?.full_name || "Unknown User")}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
                               <p className="font-medium text-gray-900 dark:text-white truncate">
-                                To: {message.recipient.full_name}
+                                // Added fallback for missing recipient name To:{" "}
+                                {message.recipient?.full_name || "Unknown User"}
                               </p>
                               <span className="text-xs text-gray-500">{formatDate(message.created_at)}</span>
                             </div>

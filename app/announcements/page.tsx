@@ -17,15 +17,28 @@ export default async function AnnouncementsPage() {
     redirect("/auth/login")
   }
 
-  // Get all announcements
   const { data: announcements, error: announcementsError } = await supabase
     .from("announcements")
-    .select("*, profiles(full_name)")
+    .select("*")
     .order("created_at", { ascending: false })
 
   if (announcementsError) {
     console.error("Error fetching announcements:", announcementsError)
   }
+
+  // Get profiles for announcement authors
+  const authorIds = announcements?.map((a) => a.author_id) || []
+  const { data: profiles } = await supabase.from("profiles").select("id, full_name").in("id", authorIds)
+
+  // Create a map for quick profile lookup
+  const profileMap = new Map(profiles?.map((p) => [p.id, p]) || [])
+
+  // Combine announcements with profile data
+  const announcementsWithProfiles =
+    announcements?.map((announcement) => ({
+      ...announcement,
+      author_name: profileMap.get(announcement.author_id)?.full_name || "Unknown",
+    })) || []
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString([], {
@@ -56,13 +69,13 @@ export default async function AnnouncementsPage() {
 
         {/* Announcements List */}
         <div className="max-w-4xl mx-auto space-y-6">
-          {announcements && announcements.length > 0 ? (
-            announcements.map((announcement: any) => (
+          {announcementsWithProfiles && announcementsWithProfiles.length > 0 ? (
+            announcementsWithProfiles.map((announcement: any) => (
               <Card key={announcement.id} className="shadow-sm">
                 <CardHeader>
                   <CardTitle className="text-xl">{announcement.title}</CardTitle>
                   <CardDescription>
-                    By {announcement.profiles?.full_name} • {formatDate(announcement.created_at)}
+                    By {announcement.author_name} • {formatDate(announcement.created_at)}
                     {announcement.updated_at !== announcement.created_at && " (edited)"}
                   </CardDescription>
                 </CardHeader>

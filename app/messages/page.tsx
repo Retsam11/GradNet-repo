@@ -19,34 +19,40 @@ export default async function MessagesPage({
     redirect("/auth/login")
   }
 
-  // Get user's messages (both sent and received)
-  const { data: messages, error: messagesError } = await supabase
+  const { data: rawMessages, error: messagesError } = await supabase
     .from("messages")
-    .select(
-      `
-      *,
-      sender:profiles!messages_sender_id_fkey(id, full_name),
-      recipient:profiles!messages_recipient_id_fkey(id, full_name)
-    `,
-    )
+    .select("*")
     .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
     .order("created_at", { ascending: false })
 
-  // Get all profiles for compose functionality
+  const { data: allProfiles, error: allProfilesError } = await supabase.from("profiles").select("id, full_name, email")
+
   const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
     .select("id, full_name, email")
     .neq("id", user.id)
     .order("full_name", { ascending: true })
 
-  if (messagesError || profilesError) {
-    console.error("Error fetching data:", messagesError || profilesError)
+  if (messagesError || profilesError || allProfilesError) {
+    console.error("Error fetching data:", messagesError || profilesError || allProfilesError)
   }
+
+  const messages =
+    rawMessages?.map((message) => {
+      const senderProfile = allProfiles?.find((p) => p.id === message.sender_id)
+      const recipientProfile = allProfiles?.find((p) => p.id === message.recipient_id)
+
+      return {
+        ...message,
+        sender_profile: senderProfile,
+        recipient_profile: recipientProfile,
+      }
+    }) || []
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <MessagingInterface
-        messages={messages || []}
+        messages={messages}
         profiles={profiles || []}
         currentUserId={user.id}
         preSelectedRecipient={params.to}

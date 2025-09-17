@@ -83,7 +83,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-lg">Alumni Directory</CardTitle>
             </CardHeader>
             <CardContent className="text-center pt-0">
-              <CardDescription className="mb-4">Browse and connect with alumni</CardDescription>
+              <CardDescription className="mb-4">Browse and connect alumni</CardDescription>
               <Button asChild className="w-full">
                 <Link href="/directory">Explore</Link>
               </Button>

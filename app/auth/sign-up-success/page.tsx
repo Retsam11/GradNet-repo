@@ -26,8 +26,8 @@ export default function SignUpSuccessPage() {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                You&apos;ve successfully signed up for GradNet! Please check your email and click the confirmation
-                link to activate your account.
+                You&apos;ve successfully signed up for GradNet! Please check your email and click the confirmation link
+                to activate your account.
               </p>
               <div className="space-y-3">
                 <Button asChild className="w-full">
