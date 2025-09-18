@@ -25,7 +25,7 @@ export default async function HomePage() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GradNet</h1>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" asChild>
+            <Button className="text-[rgba(0,0,0,1)] bg-foreground" variant="ghost" asChild>
               <Link href="/auth/login">Login</Link>
             </Button>
             <Button asChild>
